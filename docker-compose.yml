@@ -1,39 +1,28 @@
-version: "3.8"
+# docker-compose.yml
+
+version: '3.8'
 
 services:
-  mongo: 
+  web:
+    build: .
+    command: sh -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+
+  mongodb:
     image: mongo:latest
-    container_name: mongo
+    container_name: mongodb
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongadmin
-      MONGO_INITDB_ROOT_PASSWORD: mysecretpassword
+    env_file:
+      - .env
     ports:
       - 27017:27017
     volumes:
-      - mongodata:/data/db
-
-  web:
-    container_name: Web
-    build: .
-    restart: "always"
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/code
-      - ./static/:/code/static/
-      - ./media/:/code/media/
-    links:
-      - mongo
-    env_file: .env
-    depends_on:
-      - mongo
+      - mongo-data:/data/db
 
 volumes:
-  mongodata:
-    driver: local
-
-# networks:
-#   default:
-#     external:
-#       name: nginx-proxy
+  mongo-data:

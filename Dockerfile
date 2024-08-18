@@ -1,26 +1,22 @@
-FROM python:3.10
-ARG DIR=/code
+# Base image
+FROM python:3.11-slim
 
-WORKDIR $DIR
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get upgrade -y
+# Set work directory
+WORKDIR /app
 
+# Install dependencies
 COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN python3 -m pip install --upgrade pip
-
-RUN apt-get install nano -y
-RUN apt-get install gettext -y
-
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
-
+# Copy project
 COPY . .
 
-# uWSGI will listen on this port
-EXPOSE 8050
+# Expose port 8000
+EXPOSE 8000
 
-# Install uWSGI
-RUN pip install uwsgi
-
-# Start uWSGI
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
+# Start project
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
