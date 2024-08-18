@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  mongo: 
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongadmin
+      MONGO_INITDB_ROOT_PASSWORD: mysecretpassword
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/data/db
+
+  web:
+    container_name: Web
+    build: .
+    restart: "always"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code
+      - ./static/:/code/static/
+      - ./media/:/code/media/
+    links:
+      - mongo
+    env_file: .env
+    depends_on:
+      - mongo
+
+volumes:
+  mongodata:
+    driver: local
+
+# networks:
+#   default:
+#     external:
+#       name: nginx-proxy
