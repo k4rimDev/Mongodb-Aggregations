@@ -36,7 +36,7 @@ LOCAL_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    
+    'rest_framework'
 ]
 
 INSTALLED_APPS = [
@@ -94,18 +94,18 @@ if not DEBUG:
     }
 else:
     DATABASES = {
-        'default': {
-            'ENGINE': 'djongo',
-            'NAME': os.getenv('MONGO_DB_NAME'),
-            'ENFORCE_SCHEMA': True,
-            'CLIENT': {
-                'host': 'db',
-                'port': 27017,
-                'username': 'mongadmin',
-                'password': 'mysecretpassword', 
-            }
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': os.getenv('MONGO_DB_NAME'),
+        'ENFORCE_SCHEMA': True,
+        'CLIENT': {
+            'host': os.getenv('MONGO_DB_HOST'),
+            'port': 27017,
+            'username': os.getenv('MONGO_DB_USERNAME'),
+            'password': os.getenv('MONGO_DB_PASSWORD'),
         }
     }
+}
 
 
 # Password validation
