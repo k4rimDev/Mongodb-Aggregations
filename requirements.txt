@@ -1,4 +1,12 @@
-Django>=4.2
+asgiref
+dataclasses
+Django
 djangorestframework
+djongo5
+dnspython
 pymongo
-djongo
+pytz
+sqlparse
+uWSGI
+requests
+django-debug-toolbar

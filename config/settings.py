@@ -36,7 +36,8 @@ LOCAL_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'rest_framework'
+    'rest_framework',
+    'djongo'
 ]
 
 INSTALLED_APPS = [
@@ -85,24 +86,19 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if not DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'djongo',
-            'NAME': 'demos',
-        }
-    }
-else:
-    DATABASES = {
+print( os.getenv('MONGO_DB_HOST'), '----'*30)
+DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': os.getenv('MONGO_DB_NAME'),
+        'NAME': 'feedback',
         'ENFORCE_SCHEMA': True,
+        'AUTH_SOURCE': 'admin',
+        'AUTH_MECHANISM': 'SCRAM-SHA-1',
         'CLIENT': {
-            'host': os.getenv('MONGO_DB_HOST'),
+            'host': 'mongodb',
             'port': 27017,
-            'username': os.getenv('MONGO_DB_USERNAME'),
-            'password': os.getenv('MONGO_DB_PASSWORD'),
+            'username': 'root',
+            'password': 'mongoadmin'
         }
     }
 }

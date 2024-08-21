@@ -1,28 +1,66 @@
-# docker-compose.yml
-
 version: '3.8'
 
 services:
   web:
     build: .
-    command: sh -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
+    restart: always
+    container_name: web
     volumes:
-      - .:/app
+      - .:/code 
+    env_file:
+      - .env
     ports:
       - "8000:8000"
-    depends_on:
+    links:
       - mongodb
+    depends_on:
+      - migration
 
   mongodb:
     image: mongo:latest
     container_name: mongodb
     restart: always
-    env_file:
-      - .env
     ports:
       - 27017:27017
     volumes:
-      - mongo-data:/data/db
+      - ./init-db:/docker-entrypoint-initdb.d
+      - ./data-db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+      MONGO_INITDB_DATABASE: feedback
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: mongoadmin
+
+  migration:
+    build: .
+    image: app
+    command: python manage.py migrate
+    volumes:
+      - .:/code
+    links:
+      - mongodb
+    depends_on:
+      - make_migrations
+
+  make_migrations:
+    build: .
+    image: app
+    command: python manage.py makemigrations
+    volumes:
+      - .:/code
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
 
 volumes:
-  mongo-data:
+  init-db:
+  data-db:
